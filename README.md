@@ -22,10 +22,6 @@ It’s ideal for car dealerships, auto exhibitions, or personal projects demonst
 - [Author](#-author)
 
 ---
----
-Here is a Demo website :: http://codegeekbrian.infinityfree.me/ ::
----
----
 
 ## 🧩 Overview
 The **CARSHOW** website provides pages for displaying car listings, company information, contact forms, and user registration.  
