@@ -16,5 +16,15 @@ Thumbs.db
 .env
 *.sql
 
+# Local database files
+data/*.db
+
+# Cache files
+cache/*
+!cache/.gitkeep
+
+# Code review plugin
+.code-review-graph/
+
 # Composer / vendor
 vendor/

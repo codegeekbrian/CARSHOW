@@ -1,54 +1,63 @@
 <?php
 /**
- * Contact form handler — saves messages to storage/messages.json
- * Also sends an email if configured.
+ * Contact Form Handler
+ * Validates input, applies rate limiting, saves to storage, and sends email notification.
+ *
+ * Expected POST fields: csrf_token, name, email, subject, message
+ * Returns: JSON { success: bool, message: string }
  */
 
-// Include CSRF protection
-require_once 'csrf.php';
+// Start session & load dependencies
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/csrf.php';
 
-// Allow only POST from same origin
+// ── Method Check ────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit;
 }
 
-// Validate CSRF token
-$csrf_token = $_POST['csrf_token'] ?? '';
-if (!validateCSRFToken($csrf_token)) {
+// ── CSRF Validation ─────────────────────────────────────
+$token = $_POST['csrf_token'] ?? '';
+if (!validateCSRFToken($token)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid request. Please try again.']);
     exit;
 }
 
-// Rate limiting: max 5 messages per IP per hour
-$rate_file = __DIR__ . '/storage/rate_limit.json';
+// ── Rate Limiting ───────────────────────────────────────
+$rate_file = STORAGE_DIR . 'rate_limit.json';
 if (file_exists($rate_file)) {
-    $rates = json_decode(file_get_contents($rate_file), true) ?: [];
-    $cutoff = time() - 3600;
-    $recent = array_filter($rates, fn($t) => $t > $cutoff);
-    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
-    $my_count = count(array_filter($recent, fn($t) => ($t['ip'] ?? '') === $ip));
-    if ($my_count >= 5) {
+    $rates  = json_decode(file_get_contents($rate_file), true) ?: [];
+    $cutoff = time() - RATE_LIMIT_WINDOW;
+    $recent = array_filter($rates, fn($t) => ($t['time'] ?? 0) > $cutoff);
+    $ip     = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
+    $myCount = count(array_filter($recent, fn($t) => ($t['ip'] ?? '') === $ip));
+    if ($myCount >= RATE_LIMIT_MAX) {
         http_response_code(429);
-        echo json_encode(['success' => false, 'message' => 'Too many messages. Please wait an hour before sending another.']);
+        echo json_encode(['success' => false, 'message' => 'Too many messages. Please wait an hour.']);
         exit;
     }
     $recent[] = ['ip' => $ip, 'time' => time()];
-    file_put_contents($rate_file, json_encode($recent));
+    if (!is_dir(STORAGE_DIR)) { mkdir(STORAGE_DIR, 0755, true); }
+    file_put_contents($rate_file, json_encode(array_values($recent)));
+} else {
+    if (!is_dir(STORAGE_DIR)) { mkdir(STORAGE_DIR, 0755, true); }
+    file_put_contents($rate_file, json_encode([['ip' => $ip, 'time' => time()]]));
 }
 
-// Validate input
+// ── Input Validation ─────────────────────────────────────
 $name    = trim($_POST['name'] ?? '');
 $email   = trim($_POST['email'] ?? '');
 $subject = trim($_POST['subject'] ?? 'General Inquiry');
 $message = trim($_POST['message'] ?? '');
 
 $errors = [];
-if (strlen($name) < 2)  $errors[] = 'Name must be at least 2 characters.';
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Please enter a valid email address.';
-if (strlen($message) < 10) $errors[] = 'Message must be at least 10 characters.';
+if (strlen($name) < 2)    { $errors[] = 'Name must be at least 2 characters.'; }
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors[] = 'Please enter a valid email address.'; }
+if (strlen($message) < 10) { $errors[] = 'Message must be at least 10 characters.'; }
 
 if (!empty($errors)) {
     http_response_code(400);
@@ -56,32 +65,29 @@ if (!empty($errors)) {
     exit;
 }
 
-// Save message
+// ── Save Message ────────────────────────────────────────
 $entry = [
     'id'      => uniqid('msg_', true),
     'name'    => $name,
     'email'   => $email,
     'subject' => $subject,
     'message' => $message,
-    'ip'      => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'],
+    'ip'      => $ip,
     'date'    => date('Y-m-d H:i:s'),
 ];
 
-$storage_dir = __DIR__ . '/storage';
-if (!is_dir($storage_dir)) mkdir($storage_dir, 0755, true);
-
-$messages_file = $storage_dir . '/messages.json';
-$existing = file_exists($messages_file) ? json_decode(file_get_contents($messages_file), true) : [];
+$existing = file_exists(MESSAGES_FILE) ? json_decode(file_get_contents(MESSAGES_FILE), true) : [];
 array_unshift($existing, $entry);
-file_put_contents($messages_file, json_encode($existing, JSON_PRETTY_PRINT));
+file_put_contents(MESSAGES_FILE, json_encode($existing, JSON_PRETTY_PRINT));
 
-// Optional: send email notification
-// Change these to match your actual email
-$to_email = 'info@ownitdriveit.co.ke';
-$mail_subject = "New Contact Form Message: " . htmlspecialchars($subject);
-$mail_body = "From: {$entry['name']}\nEmail: {$entry['email']}\nDate: {$entry['date']}\n\n{$entry['message']}";
-$headers = "From: noreply@ownitdriveit.co.ke\r\nReply-To: {$entry['email']}\r\nContent-Type: text/plain; charset=UTF-8";
+// ── Email Notification ──────────────────────────────────
+$mailSubject = "New Contact Form Message: " . htmlspecialchars($subject);
+$mailBody    = "From: {$name}\nEmail: {$email}\nDate: {$entry['date']}\n\n{$message}";
+$headers     = "From: " . NOREPLY_EMAIL . "\r\nReply-To: {$email}\r\nContent-Type: text/plain; charset=UTF-8";
+@mail(CONTACT_EMAIL, $mailSubject, $mailBody, $headers);
 
-@mail($to_email, $mail_subject, $mail_body, $headers);
-
-echo json_encode(['success' => true, 'message' => "Thank you, {$entry['name']}. Your message has been received and we'll reply to " . htmlspecialchars($email) . " shortly."]);
+// ── Response ─────────────────────────────────────────────
+echo json_encode([
+    'success' => true,
+    'message' => "Thank you, {$name}. Your message has been received. We'll reply to {$email} shortly."
+]);

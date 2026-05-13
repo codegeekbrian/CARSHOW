@@ -1,13 +1,15 @@
 <?php
-require_once 'db_admin.php';
+require_once __DIR__ . '/admin_db.php';
+
+if (is_authenticated()) {
+    header('Location: index.php');
+    exit();
+}
 
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
-    if (authenticateAdmin($username, $password)) {
+    if (authenticate($_POST['username'] ?? '', $_POST['password'] ?? '')) {
         header('Location: index.php');
         exit();
     } else {

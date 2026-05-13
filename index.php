@@ -1,137 +1,140 @@
-<?php 
-$current_page = 'index'; 
+<?php
+/**
+ * Home Page
+ * Displays hero banner, featured vehicles, and legacy bento grid.
+ */
+$current_page = 'index';
+require_once __DIR__ . '/include/config.php';
+require_once __DIR__ . '/include/db.php';
+require_once __DIR__ . '/include/analytics.php';
+
+logActivity('view');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Own It &amp; Drive It — Kenya's Premier Car Destination</title>
-  <meta name="description" content="Kenya's premier car dealership and automotive enthusiast hub.">
-  <link rel="stylesheet" href="assets/css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars(SITE_NAME); ?> — Kenya's Premier Car Destination</title>
+    <meta name="description" content="Kenya's premier car dealership and automotive enthusiast hub.">
+    <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
 
-<?php include "include/nav.php"; ?>
+<?php include __DIR__ . '/include/nav.php'; ?>
 
+<!-- ── Hero Banner ─────────────────────────────────────── -->
 <div class="site-hero">
-  <h1>OWN IT.<br><span>DRIVE IT.</span></h1>
-  <p>Kenya's premier destination for quality imported vehicles and legendary automotive heritage — sourced from Japan, UK, Australia &amp; beyond.</p>
-  <div class="hero-rule"></div>
-</div>
+    <h1>OWN IT.<br><span>DRIVE IT.</span></h1>
+    <p>Kenya's premier destination for quality locally available vehicles and legendary automotive heritage.</p>
+    <div class="hero-rule"></div>
 </div>
 
 <div class="page-content">
 
-  <h2 class="section-title">
-    <span>Featured</span> Vehicles
-    <div class="title-line"></div>
-  </h2>
+    <!-- ── Featured Vehicles ──────────────────────────────── -->
+    <h2 class="section-title">
+        <span>Featured</span> Vehicles
+        <div class="title-line"></div>
+    </h2>
 
-  <div class="hero-cards">
-    <div class="hero-card">
-      <img src="assets/images/products/landcruiser.png" alt="Land Cruiser" loading="lazy">
-      <div class="hero-card-overlay">
-        <div class="hero-card-tag">Toyota Motors · 2025</div>
-        <h3>Land Cruiser</h3>
-        <a class="hero-card-link" href="pages/inventory.php#toyota">View Details</a>
-      </div>
+    <div class="hero-cards">
+        <?php
+        $stmt = $db->prepare("SELECT v.*, b.name as brand_name FROM vehicles v JOIN brands b ON v.brand_id = b.id WHERE v.is_featured = 1 LIMIT 3");
+        $stmt->execute();
+        $featured = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($featured as $car):
+            $img = $car['image_url'];
+            $encoded_img = implode('/', array_map('rawurlencode', explode('/', $img)));
+            $alt_img = '';
+            if (str_ends_with($img, '.webp')) {
+                $alt_img = str_replace('.webp', '.png', $img);
+                if (!file_exists(__DIR__ . '/' . $alt_img)) {
+                    $alt_img = str_replace('.webp', '.jpg', $img);
+                }
+            }
+            $brand_slug = strtolower(str_replace(' ', '-', $car['brand_name']));
+        ?>
+        <div class="hero-card">
+            <img src="/<?php echo htmlspecialchars($encoded_img); ?>" alt="<?php echo htmlspecialchars($car['model']); ?>" loading="lazy"
+                 <?php if ($alt_img): ?>onerror="this.src='/<?php echo rawurlencode($alt_img); ?>'; this.onerror=null;"<?php endif; ?>>
+            <div class="hero-card-overlay">
+                <div class="hero-card-tag"><?php echo htmlspecialchars($car['brand_name']); ?> · <?php echo htmlspecialchars($car['year']); ?></div>
+                <h3><?php echo htmlspecialchars($car['model']); ?></h3>
+                <a class="hero-card-link" href="/inventory#<?php echo $brand_slug; ?>">View Details</a>
+            </div>
+        </div>
+        <?php endforeach; ?>
     </div>
-    <div class="hero-card">
-      <img src="assets/images/products/carrera gts.webp" alt="Porsche Carrera GTS" loading="lazy">
-      <div class="hero-card-overlay">
-        <div class="hero-card-tag">Porsche Motors · 2025</div>
-        <h3>911 Carrera GTS</h3>
-        <a class="hero-card-link" href="pages/inventory.php#porsche">View Details</a>
-      </div>
+
+    <!-- ── Legacy Showcase ──────────────────────────────── -->
+    <h2 class="section-title">
+        <span>Legacy</span> Showcase
+        <div class="title-line"></div>
+    </h2>
+
+    <div class="legacy-bento">
+        <a class="bento-tile wide" href="/legacy/GT-R">
+            <img src="/assets/images/gtr/r35-nissan-gt-r-1709580348.jpg" alt="Nissan GT-R" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Nissan GT-R</span>
+                <small>1969 — Present</small>
+            </div>
+        </a>
+        <a class="bento-tile" href="/legacy/Lancer%20Evo">
+            <img src="/assets/images/lancer/evo%2010.jpg" alt="Lancer Evo" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Lancer Evo</span>
+                <small>1992 — 2016</small>
+            </div>
+        </a>
+        <a class="bento-tile" href="/legacy/Supra">
+            <img src="/assets/images/supra/2020-supra-7.jpg" alt="Toyota Supra" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Toyota Supra</span>
+                <small>1978 — Present</small>
+            </div>
+        </a>
+        <a class="bento-tile tall" href="/legacy/Jesko">
+            <img src="/assets/images/koenigsegg/Jesko.jpg" alt="Koenigsegg Jesko" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Koenigsegg Jesko</span>
+                <small>1994 — Present</small>
+            </div>
+        </a>
+        <a class="bento-tile" href="/legacy/Charger">
+            <img src="/assets/images/charger/1969_Dodge_Charger_green_I.jpg" alt="Dodge Charger" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Dodge Charger</span>
+                <small>1966 — Present</small>
+            </div>
+        </a>
+        <a class="bento-tile" href="/legacy/RX-7">
+            <img src="/assets/images/mazda/mazda-rx-7-fd.jpg" alt="Mazda RX-7" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Mazda RX-7</span>
+                <small>1978 — 2002</small>
+            </div>
+        </a>
+        <a class="bento-tile" href="/legacy/NSX">
+            <img src="/assets/images/nsx/HONDA_NSX-2016_main.jpg" alt="Honda NSX" loading="lazy"
+                 onerror="this.src='/assets/images/products/landcruiser.png'; this.onerror=null;">
+            <div class="bento-body">
+                <span class="bento-title">Honda NSX</span>
+                <small>1990 — 2022</small>
+            </div>
+        </a>
     </div>
-    <div class="hero-card">
-      <img src="assets/images/products/ranger.webp" alt="Ford Ranger" loading="lazy">
-      <div class="hero-card-overlay">
-        <div class="hero-card-tag">Ford Motors · 2025</div>
-        <h3>Ranger</h3>
-        <a class="hero-card-link" href="pages/inventory.php#ford">View Details</a>
-      </div>
-    </div>
-  </div>
 
-  <h2 class="section-title">
-    <span>Heritage</span> Showcase
-    <div class="title-line"></div>
-  </h2>
+</div>
 
-  <div class="heritage-bento">
-    <a class="bento-tile wide" href="legacy/GT-R">
-      <img src="assets/images/gtr/r35-nissan-gt-r-1709580348.jpg" alt="Nissan GT-R" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Nissan GT-R</span>
-        <small>1969 — Present</small>
-      </div>
-    </a>
-    <a class="bento-tile" href="legacy/Lancer%20Evo">
-      <img src="assets/images/lancer/evo 10.jpg" alt="Lancer Evo" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Lancer Evo</span>
-        <small>1992 — 2016</small>
-      </div>
-    </a>
-    <a class="bento-tile" href="legacy/Supra">
-      <img src="assets/images/supra/2020-supra-7.jpg" alt="Toyota Supra" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Toyota Supra</span>
-        <small>1978 — Present</small>
-      </div>
-    </a>
-    <a class="bento-tile tall" href="legacy/Koenigsegg">
-      <img src="assets/images/koenigsegg/Jesko.jpg" alt="Koenigsegg" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Koenigsegg</span>
-        <small>1994 — Present</small>
-      </div>
-    </a>
-    <a class="bento-tile" href="legacy/Charger">
-      <img src="assets/images/charger/1969_Dodge_Charger_green_I.jpg" alt="Dodge Charger" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Dodge Charger</span>
-        <small>1966 — Present</small>
-      </div>
-    </a>
-    <a class="bento-tile" href="legacy/RX-7">
-      <img src="assets/images/mazda/mazda-rx-7-fd.jpg" alt="Mazda RX-7" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Mazda RX-7</span>
-        <small>1978 — 2002</small>
-      </div>
-    </a>
-    <a class="bento-tile" href="legacy/NSX">
-      <img src="assets/images/nsx/HONDA_NSX-2016_main.jpg" alt="Honda NSX" loading="lazy">
-      <div class="bento-body">
-        <span class="bento-title">Honda NSX</span>
-        <small>1990 — 2022</small>
-      </div>
-    </a>
-  </div>
-
-</div><!-- /page-content -->
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <p class="footer-title">What Our <span>Clients</span> Say</p>
-    <div class="testimonials">
-      <div class="testimonial">
-        <p>"This website has been so useful in searching for a car. As a first-time buyer the process was overwhelming, but having everything in one place made it so much easier."</p>
-        <cite>— Bianca, Dallas TX</cite>
-      </div>
-      <div class="testimonial">
-        <p>"It's rare that I don't find what I'm looking for. Own It &amp; Drive It will be my first and last stop the next time I'm in the market for a vehicle."</p>
-        <cite>— Greg, Bay Village OH</cite>
-      </div>
-    </div>
-    <p class="footer-copy">&copy; <?= date('Y') ?> &nbsp;·&nbsp; OWN IT &amp; DRIVE IT STORE &nbsp;·&nbsp; NAIROBI, KENYA</p>
-  </div>
-</footer>
-
-<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
-<script src="assets/js/main.js"></script>
+<?php include __DIR__ . '/include/footer.php'; ?>
 </body>
 </html>

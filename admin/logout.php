@@ -1,7 +1,6 @@
 <?php
-require_once 'db_admin.php';
+require_once __DIR__ . '/admin_db.php';
 
-logoutAdmin();
+logout();
 header('Location: login.php');
 exit();
-?>
