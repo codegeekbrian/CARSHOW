@@ -1,11 +1,11 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../../include/config.php';
+require_once __DIR__ . '/../../include/session_helpers.php';
 
-// Destroy all session data
-$_SESSION = array();
-session_destroy();
+destroy_session_fully();
 
-// Redirect to homepage
-header('Location: index.php');
-exit();
-?>
+header('Location: ' . url(''));
+exit;

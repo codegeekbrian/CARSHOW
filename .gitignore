@@ -18,10 +18,37 @@ Thumbs.db
 
 # Local database files
 data/*.db
+data/*.sqlite
+data/*.sqlite3
+data/*.db-journal
+data/*.sqlite-journal
+data/*.db-wal
+data/*.db-shm
+data/*.sqlite-wal
+data/*.sqlite-shm
 
 # Cache files
 cache/*
 !cache/.gitkeep
+
+# Uploaded/runtime media
+uploads/*
+!uploads/.gitkeep
+assets/uploads/*
+!assets/uploads/.gitkeep
+
+# Local verification artifacts
+output/
+test-results/
+.playwright-cli/
+
+# Runtime logs and local backups
+*.log
+*.bak
+*.backup
+*.tmp
+data/error.log
+data/public_data_backup_*.json
 
 # Code review plugin
 .code-review-graph/

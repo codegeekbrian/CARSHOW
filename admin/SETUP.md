@@ -1,49 +1,42 @@
 # Admin Panel Setup Guide
 
-## Initial Setup
+## Credentials (required)
 
-1. The admin panel is pre-configured with default credentials:
-   - Username: `admin`
-   - Password: `password123`
+Secrets are **not** stored in source files. Set them as server environment variables in production. For local development only, you may use a `.env` file at the repo root.
 
-2. For production use, change these credentials in `config.php`
+1. Copy the example file:
+   ```powershell
+   copy .env.example .env
+   ```
+2. Generate a password hash:
+   ```powershell
+   php -r "echo password_hash('your_strong_password', PASSWORD_DEFAULT);"
+   ```
+3. Paste the hash into your environment variables or local `.env`:
+   ```
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD_HASH=<paste hash here>
+   ```
 
-## Changing Admin Credentials
+`.env` is gitignored and must not be deployed. Never commit real credentials.
 
-To change the admin credentials:
+## Security features (Phase 2)
 
-1. Open `admin/config.php` in a text editor
-2. Change the `ADMIN_USERNAME` value to your desired username
-3. Generate a new password hash by running:
+- CSRF on admin login and message delete
+- `session_regenerate_id()` on successful admin login
+- Session idle timeout (`SESSION_TIMEOUT` in `.env`, default 7200 seconds)
+- Secure logout clears session cookie
 
-```php
-<?php
-echo password_hash('your_new_password', PASSWORD_DEFAULT);
-?>
-```
-
-4. Update `ADMIN_PASSWORD_HASH` with the generated hash
-
-## Security Recommendations
-
-1. Always change the default credentials in production
-2. Use a strong password (at least 12 characters with mixed case, numbers, and symbols)
-3. Consider changing the password regularly
-4. Restrict access to the admin panel using IP whitelisting if possible
-5. Enable HTTPS on your server for secure transmission of credentials
-
-## Accessing the Admin Panel
+## Access
 
 Navigate to: `http://yourdomain.com/admin/`
 
-Login with your admin credentials to access the dashboard.
-
 ## Troubleshooting
 
-If you cannot log in:
-1. Verify that `config.php` contains the correct username and password hash
-2. Check that the database connection is working
-3. Clear your browser cache and cookies
-4. Ensure sessions are working correctly on your server
+| Problem | Fix |
+|---------|-----|
+| "Admin not configured" on login | Set `ADMIN_PASSWORD_HASH` in the server environment or local `.env` |
+| Session expired | Log in again; adjust `SESSION_TIMEOUT` if needed |
+| Cannot log in | Verify hash matches password; clear browser cookies |
 
-For further assistance, refer to the main project README.md file.
+See `.env.example` for supported environment variables.

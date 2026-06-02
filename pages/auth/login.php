@@ -3,54 +3,54 @@
  * User Login Page
  * Authenticates users against the database.
  */
-session_start();
+require_once __DIR__ . '/../../include/config.php';
+require_once __DIR__ . '/../../include/csrf.php';
+require_once __DIR__ . '/../../include/session_helpers.php';
+require_once __DIR__ . '/../../include/db.php';
+enforce_user_session_timeout($db);
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ' . url(''));
     exit;
 }
 
 $error = '';
+$notice = $_SESSION['account_notice'] ?? '';
+unset($_SESSION['account_notice']);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if (empty($email) || empty($password)) {
-        $error = 'Both email and password are required.';
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Invalid request. Please try again.';
     } else {
-        require_once '../../include/db.php';
+        $email    = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
 
-        // Look up user by email
-        $stmt = $db->prepare("SELECT id, name, password FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user && password_verify($password, $user['password'])) {
-            // Success — set session and redirect
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            header('Location: index.php');
-            exit;
+        if (empty($email) || empty($password)) {
+            $error = 'Both email and password are required.';
         } else {
-            $error = 'Invalid email or password.';
+            $user = fetchPublicUserForLogin($db, $email);
+
+            if ($user && password_verify($password, $user['password'])) {
+                if (!publicUserCanAccess($user)) {
+                    $error = 'This account is not currently available. Please contact the dealership team.';
+                } else {
+                start_user_session((int) $user['id'], $user['name']);
+                header('Location: ' . url(''));
+                exit;
+                }
+            } else {
+                $error = 'Invalid email or password.';
+            }
         }
     }
 }
+$current_page = 'login';
+$pageTitle = 'Login';
+require_once __DIR__ . '/../../include/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Own It &amp; Drive It</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-</head>
-<body>
-    <?php include __DIR__ . "/../../include/nav.php"; ?>
-
+<main>
     <div class="page-content">
         <div class="auth-wrap">
             <h2>User Login</h2>
@@ -58,8 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($error): ?>
                 <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
+            <?php if ($notice): ?>
+                <div class="error-msg"><?php echo htmlspecialchars($notice); ?></div>
+            <?php endif; ?>
 
             <form method="POST">
+                <?php echo csrfField(); ?>
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email"
@@ -68,28 +72,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted); cursor: pointer;">
-                        <input type="checkbox" onclick="togglePassword('password')"> Show Password
-                    </label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" data-password-toggle="password" aria-pressed="false">Show</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-auth">Login</button>
 
                 <div class="auth-link">
-                    Don't have an account? <a href="register.php">Register here</a>
+                    Don't have an account? <a href="<?php echo url('register'); ?>">Register here</a>
                 </div>
             </form>
         </div>
     </div>
+</main>
 
-    <script>
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        input.type = input.type === 'password' ? 'text' : 'password';
-    }
-    </script>
-
-    <?php include __DIR__ . "/../../include/footer.php"; ?>
-</body>
-</html>
+<?php include __DIR__ . '/../../include/footer.php'; ?>

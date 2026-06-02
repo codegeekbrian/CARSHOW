@@ -1,93 +1,115 @@
 <?php
 /**
- * Contact Form Handler
- * Validates input, applies rate limiting, saves to storage, and sends email notification.
- *
- * Expected POST fields: csrf_token, name, email, subject, message
- * Returns: JSON { success: bool, message: string }
+ * Contact Form Handler (MySQL)
+ * Validates input, saves to database, and returns JSON.
  */
-
-// Start session & load dependencies
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+header('Content-Type: application/json');
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/csrf.php';
 
-// ── Method Check ────────────────────────────────────────
+// ── Validation ───────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit;
 }
 
-// ── CSRF Validation ─────────────────────────────────────
-$token = $_POST['csrf_token'] ?? '';
-if (!validateCSRFToken($token)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid request. Please try again.']);
+if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+    echo json_encode(['success' => false, 'message' => 'Security token mismatch. Please refresh and try again.']);
     exit;
 }
 
-// ── Rate Limiting ───────────────────────────────────────
-$rate_file = STORAGE_DIR . 'rate_limit.json';
-if (file_exists($rate_file)) {
-    $rates  = json_decode(file_get_contents($rate_file), true) ?: [];
-    $cutoff = time() - RATE_LIMIT_WINDOW;
-    $recent = array_filter($rates, fn($t) => ($t['time'] ?? 0) > $cutoff);
-    $ip     = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
-    $myCount = count(array_filter($recent, fn($t) => ($t['ip'] ?? '') === $ip));
-    if ($myCount >= RATE_LIMIT_MAX) {
-        http_response_code(429);
-        echo json_encode(['success' => false, 'message' => 'Too many messages. Please wait an hour.']);
-        exit;
-    }
-    $recent[] = ['ip' => $ip, 'time' => time()];
-    if (!is_dir(STORAGE_DIR)) { mkdir(STORAGE_DIR, 0755, true); }
-    file_put_contents($rate_file, json_encode(array_values($recent)));
-} else {
-    if (!is_dir(STORAGE_DIR)) { mkdir(STORAGE_DIR, 0755, true); }
-    file_put_contents($rate_file, json_encode([['ip' => $ip, 'time' => time()]]));
-}
-
-// ── Input Validation ─────────────────────────────────────
 $name    = trim($_POST['name'] ?? '');
 $email   = trim($_POST['email'] ?? '');
 $subject = trim($_POST['subject'] ?? 'General Inquiry');
 $message = trim($_POST['message'] ?? '');
+$inquiryType = trim($_POST['inquiry_type'] ?? 'general') === 'appointment' ? 'appointment' : 'general';
+$vehicleId = max(0, (int)($_POST['vehicle_id'] ?? 0));
+$branchId = max(0, (int)($_POST['branch_id'] ?? 0));
+$phone = trim($_POST['phone'] ?? '');
+$preferredDate = trim($_POST['preferred_date'] ?? '');
+$preferredTime = trim($_POST['preferred_time'] ?? '');
+$ip      = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
 
-$errors = [];
-if (strlen($name) < 2)    { $errors[] = 'Name must be at least 2 characters.'; }
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors[] = 'Please enter a valid email address.'; }
-if (strlen($message) < 10) { $errors[] = 'Message must be at least 10 characters.'; }
-
-if (!empty($errors)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => implode(' ', $errors)]);
+if (empty($name) || empty($email) || empty($message)) {
+    echo json_encode(['success' => false, 'message' => 'Please fill in all required fields.']);
     exit;
 }
 
-// ── Save Message ────────────────────────────────────────
-$entry = [
-    'id'      => uniqid('msg_', true),
-    'name'    => $name,
-    'email'   => $email,
-    'subject' => $subject,
-    'message' => $message,
-    'ip'      => $ip,
-    'date'    => date('Y-m-d H:i:s'),
-];
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(['success' => false, 'message' => 'Please enter a valid email address.']);
+    exit;
+}
 
-$existing = file_exists(MESSAGES_FILE) ? json_decode(file_get_contents(MESSAGES_FILE), true) : [];
-array_unshift($existing, $entry);
-file_put_contents(MESSAGES_FILE, json_encode($existing, JSON_PRETTY_PRINT));
+// ── Database Storage ─────────────────────────────────────
+try {
+    $appointmentId = null;
 
-// ── Email Notification ──────────────────────────────────
-$mailSubject = "New Contact Form Message: " . htmlspecialchars($subject);
-$mailBody    = "From: {$name}\nEmail: {$email}\nDate: {$entry['date']}\n\n{$message}";
-$headers     = "From: " . NOREPLY_EMAIL . "\r\nReply-To: {$email}\r\nContent-Type: text/plain; charset=UTF-8";
-@mail(CONTACT_EMAIL, $mailSubject, $mailBody, $headers);
+    if ($inquiryType === 'appointment') {
+        if ($vehicleId < 1) {
+            echo json_encode(['success' => false, 'message' => 'Please choose a vehicle before booking a viewing.']);
+            exit;
+        }
 
-// ── Response ─────────────────────────────────────────────
-echo json_encode([
-    'success' => true,
-    'message' => "Thank you, {$name}. Your message has been received. We'll reply to {$email} shortly."
-]);
+        $vehicleStmt = $db->prepare('SELECT branch_id FROM vehicles WHERE id = ? AND is_inventory = 1 LIMIT 1');
+        $vehicleStmt->execute([$vehicleId]);
+        $vehicle = $vehicleStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$vehicle) {
+            echo json_encode(['success' => false, 'message' => 'The selected vehicle is no longer available.']);
+            exit;
+        }
+
+        if ($branchId < 1 && !empty($vehicle['branch_id'])) {
+            $branchId = (int)$vehicle['branch_id'];
+        }
+
+        $appointment = $db->prepare("
+            INSERT INTO appointments
+                (vehicle_id, branch_id, customer_name, customer_email, customer_phone, preferred_date, preferred_time, message, ip_address)
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        $appointment->execute([
+            $vehicleId,
+            $branchId > 0 ? $branchId : null,
+            $name,
+            $email,
+            $phone !== '' ? $phone : null,
+            $preferredDate !== '' ? $preferredDate : null,
+            $preferredTime !== '' ? $preferredTime : null,
+            $message,
+            $ip,
+        ]);
+        $appointmentId = (int)$db->lastInsertId();
+    }
+
+    $stmt = $db->prepare("
+        INSERT INTO messages
+            (name, email, subject, message, inquiry_type, vehicle_id, branch_id, appointment_id, ip_address)
+        VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([
+        $name,
+        $email,
+        $subject,
+        $message,
+        $inquiryType,
+        $vehicleId > 0 ? $vehicleId : null,
+        $branchId > 0 ? $branchId : null,
+        $appointmentId,
+        $ip,
+    ]);
+
+    $responseMessage = $inquiryType === 'appointment'
+        ? "Thank you, {$name}. Your viewing request has been received. We'll confirm the branch appointment shortly."
+        : "Thank you, {$name}. Your message has been received. We'll reply to {$email} shortly.";
+
+    echo json_encode([
+        'success' => true,
+        'message' => $responseMessage
+    ]);
+} catch (PDOException $e) {
+    error_log("Contact form DB error: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'An error occurred while saving your message. Please try again later.']);
+}

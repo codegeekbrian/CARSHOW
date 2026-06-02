@@ -9,10 +9,23 @@ function loadEnv($path) {
 
     $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue;
+        $line = trim($line);
+        if ($line === '' || strpos($line, '#') === 0) {
+            continue;
+        }
 
-        list($name, $value) = explode('=', $line, 2);
-        $name = trim($name);
+        if (strpos($line, '=') === false) {
+            // skip malformed line
+            continue;
+        }
+
+        [$name, $value] = array_map('trim', explode('=', $line, 2));
+        // Basic validation of name
+        if ($name === '' || preg_match('/[^A-Z0-9_]/i', $name)) {
+            continue;
+        }
+
+        // Strip optional surrounding quotes from value
         $value = trim($value, " \t\n\r\0\x0B\"'");
 
         if (!array_key_exists($name, $_SERVER) && !array_key_exists($name, $_ENV)) {

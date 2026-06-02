@@ -1,155 +1,50 @@
-# 🏎️ CARSHOW — Car Showroom Website
+# Own It & Drive It
+
+Own It & Drive It is a PHP car showroom app for browsing vehicles, sending inquiries, booking viewing appointments, and managing inventory from an admin panel.
 
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 
-A **PHP-based car showroom website** for showcasing vehicles, managing product pages, and handling user interactions.  
-Ideal for car dealerships, auto exhibitions, or personal projects demonstrating web development skills with PHP and SQLite.
+## Features
 
----
+- Vehicle and brand management from the admin area.
+- Vehicle inquiry and contact message tracking.
+- Viewing appointment requests tied to branches and vehicles.
+- Customer registration, login, and profile pages.
+- Admin dashboard with inventory and visitor metrics.
+- Tagged file cache for repeated page data.
+- CSRF checks, prepared statements, and session controls.
 
-## 📖 Table of Contents
-- [Overview](#-overview)
-- [Features](#-features)
-- [Technologies Used](#-technologies-used)
-- [Setup Instructions](#-setup-instructions)
-- [Folder Structure](#-folder-structure)
-- [License](#-license)
+## Requirements
 
----
+- PHP 7.4 or newer
+- MySQL or MariaDB
+- A web server that can run PHP, or the built-in PHP server for local development
 
-## 🧩 Overview
-The **CARSHOW** website provides pages for displaying car listings, company information, contact forms, and user registration.  
-It can be easily customized to suit a real dealership or used as a college project.
+## Local Setup
 
----
+1. Create a MySQL or MariaDB database.
+2. Copy `.env.example` to `.env`.
+3. Update the database, site, mail, and admin values in `.env`.
+4. Generate the admin password hash with:
 
-## 🚀 Features
-✅ **Home Page (`index.php`)** — Highlights featured cars and promotions.  
-✅ **About Page (`/about`)** — Details about the car company or dealership.  
-✅ **Inventory Page (`/inventory`)** — Displays available cars, prices, and specifications with advanced filtering.  
-✅ **Contact Page (`/contact`)** — Lets visitors send messages or inquiries.  
-✅ **Legacy Pages (`/legacy/*`)** — Dynamically generated pages for legendary vehicles.  
-✅ **User Authentication** — Registration (`/register`) and login (`/login`) system.  
-✅ **Admin Dashboard (`/admin`)** — Secure admin panel for managing cars, brands, and legacy details.  
+   ```bash
+   php -r "echo password_hash('your_password', PASSWORD_DEFAULT);"
+   ```
 
----
+5. Start the local server:
 
-## 🛠️ Technologies Used
-- **Frontend:** HTML5, CSS3, JavaScript  
-- **Backend:** PHP (Core PHP)  
-- **Database:** SQLite  
-- **Server:** Apache (via XAMPP, WAMP, or LAMP)
+   ```bash
+   php -S localhost:3000 router.php
+   ```
 
----
+6. Open `http://localhost:3000/`.
 
-## ⚙️ Setup Instructions
+## Publishing Notes
 
-1. **Install a Local Server Environment**
-   - Download and install [XAMPP](https://www.apachefriends.org/) or [WAMP](https://www.wampserver.com/).
-
-2. **Extract and Move the Project**
-   - Copy the `CARSHOW` folder into:
-     ```
-     C:\xampp\htdocs\
-     ```
-     or for WAMP:
-     ```
-     C:\wamp\www\
-     ```
-
-3. **Enable mod_rewrite (Apache)**
-   - Ensure `mod_rewrite` is enabled in your Apache configuration
-   - Uncomment `LoadModule rewrite_module modules/mod_rewrite.so` in `httpd.conf`
-
-4. **Start Apache**
-   - Launch the control panel and start the Apache service.
-
-5. **Access the Website**
-   - Open your browser and navigate to:
-     ```
-     http://localhost/CARSHOW/
-     ```
-
-6. **Set Up the Database**
-   - Run the following scripts in order:
-     ```
-     php tools/init_db.php
-     php tools/seed_db.php
-     php tools/seed_legacy_details.php
-     ```
-
-## 🔐 Admin Panel Access
-
-To access the admin panel:
-1. Navigate to `http://localhost/CARSHOW/admin/`
-2. Login with the default credentials:
-   - Username: `admin`
-   - Password: `password123`
-
-⚠️ **Important**: For production use, see `admin/SETUP.md` for instructions on securing your admin panel.
-
----
-
-## 🧱 Folder Structure
-
-```
-CARSHOW/
-├── admin/                 # Admin panel
-│   ├── include/           # Admin includes (header, footer)
-│   ├── admin_db.php       # Admin auth & session management
-│   ├── config.php         # Admin credentials
-│   ├── config.sample.php  # Config template
-│   ├── login.php          # Admin login
-│   ├── logout.php         # Admin logout
-│   ├── index.php          # Dashboard
-│   ├── cars.php           # Manage vehicles
-│   ├── brands.php         # Manage brands
-│   ├── legacy.php         # Manage legacy details
-│   └── SETUP.md           # Admin setup guide
-├── assets/                # Static assets
-│   ├── css/               # Stylesheets (main.css, admin.css)
-│   ├── js/                # JavaScript
-│   └── images/            # Car images
-├── data/                  # SQLite database
-├── include/               # PHP includes (db, cache, csrf, nav, footer)
-├── pages/                 # Page templates
-├── tools/                 # Database scripts
-├── .htaccess              # Apache URL rewriting
-└── README.md              # This file
-```
-
----
-
-## 🔧 Database Schema
-
-- **brands** — id, name, logo_url
-- **vehicles** — id, brand_id, model, year, engine, power, drive, description, image_url, **is_legacy**, is_inventory
-- **legacy_details** — id, vehicle_id, generation_name, years, history_text, image_url
-
----
-
-## 🛡️ Security Features
-
-- CSRF protection on all admin forms
-- Prepared statements (SQL injection prevention)
-- Password hashing with `password_hash()`
-- HTTPS redirect enforced via `.htaccess`
-- Security headers (X-Content-Type-Options, X-Frame-Options)
-
----
-
-## ⚡ Performance
-
-- File-based caching for legacy pages
-- Gzip compression for text assets
-- Cache headers for static assets (CSS, JS, images)
-- Lazy loading on all images
-
----
-
-## 📄 License
-
-MIT License — see LICENSE file for details.
+- Keep `.env`, SQL dumps, local databases, logs, backups, cache files, and test output out of Git.
+- Keep real credentials in the server environment or in a private `.env` file.
+- Deploy the app source, public assets, `data/.htaccess`, and any runtime folders your server needs.
+- Do not deploy local verification folders such as `output/`, `test-results/`, `.playwright-cli/`, or `.code-review-graph/`.

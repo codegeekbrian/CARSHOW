@@ -1,14 +1,19 @@
 <?php
 require_once __DIR__ . '/admin_db.php';
-require_auth();
-validate_csrf();
+require_permission('brands.manage');
+require_csrf();
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'add':
             $stmt = $db->prepare("INSERT INTO brands (name, logo_url) VALUES (?, ?)");
-            $message = $stmt->execute([$_POST['name'], $_POST['logo_url']]) ? "Brand added successfully!" : "Error adding brand.";
+            if ($stmt->execute([$_POST['name'], $_POST['logo_url']])) {
+                clearCacheByTag('brands');
+                $message = "Brand added successfully!";
+            } else {
+                $message = "Error adding brand.";
+            }
             break;
 
         case 'delete':
@@ -20,13 +25,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $message = "Cannot delete brand because it is used by $count vehicle(s).";
             } else {
                 $stmt = $db->prepare("DELETE FROM brands WHERE id = ?");
-                $message = $stmt->execute([$_POST['id']]) ? "Brand deleted successfully!" : "Error deleting brand.";
+                if ($stmt->execute([$_POST['id']])) {
+                    clearCacheByTag('brands');
+                    $message = "Brand deleted successfully!";
+                } else {
+                    $message = "Error deleting brand.";
+                }
             }
             break;
 
         case 'edit':
             $stmt = $db->prepare("UPDATE brands SET name = ?, logo_url = ? WHERE id = ?");
-            $message = $stmt->execute([$_POST['name'], $_POST['logo_url'], $_POST['id']]) ? "Brand updated successfully!" : "Error updating brand.";
+            if ($stmt->execute([$_POST['name'], $_POST['logo_url'], $_POST['id']])) {
+                clearCacheByTag('brands');
+                $message = "Brand updated successfully!";
+            } else {
+                $message = "Error updating brand.";
+            }
             break;
     }
 }
@@ -43,7 +58,7 @@ require_once __DIR__ . '/include/header.php';
     <div class="admin-content">
         <h2 class="section-title">
             Car Brands
-            <button class="btn btn-success" onclick="openAddModal()">Add New Brand</button>
+            <button type="button" class="btn btn-success" onclick="openAddModal()">Add New Brand</button>
         </h2>
 
         <?php if ($message): ?>
@@ -52,7 +67,8 @@ require_once __DIR__ . '/include/header.php';
             </div>
         <?php endif; ?>
 
-        <table>
+        <div class="table-responsive">
+        <table class="admin-table-stack">
             <thead>
                 <tr>
                     <th>Logo</th>
@@ -64,19 +80,19 @@ require_once __DIR__ . '/include/header.php';
             <tbody>
                 <?php foreach ($brands as $brand): ?>
                 <tr>
-                    <td>
+                    <td data-label="Logo">
                         <?php if ($brand['logo_url']): ?>
-                            <img src="../<?php echo htmlspecialchars($brand['logo_url']); ?>" alt="Logo" style="height: 30px; object-fit: contain;">
+                            <img src="../<?php echo htmlspecialchars($brand['logo_url']); ?>" alt="Logo" class="admin-logo-preview">
                         <?php else: ?>
                             -
                         <?php endif; ?>
                     </td>
-                    <td><?php echo htmlspecialchars($brand['name']); ?></td>
-                    <td><?php echo $brand['vehicle_count']; ?></td>
-                    <td>
-                        <button class="btn" onclick='openEditModal(<?php echo $brand["id"]; ?>, <?php echo json_encode($brand["name"]); ?>, <?php echo json_encode($brand["logo_url"]); ?>)'>Edit</button>
+                    <td data-label="Brand Name"><?php echo htmlspecialchars($brand['name']); ?></td>
+                    <td data-label="Vehicles Count"><?php echo $brand['vehicle_count']; ?></td>
+                    <td data-label="Actions">
+                        <button type="button" class="btn" onclick='openEditModal(<?php echo $brand["id"]; ?>, <?php echo json_encode($brand["name"]); ?>, <?php echo json_encode($brand["logo_url"]); ?>)'>Edit</button>
                         <?php if ($brand['vehicle_count'] == 0): ?>
-                            <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                            <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
                                 <?php echo csrf_field(); ?>
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?php echo $brand['id']; ?>">
@@ -90,12 +106,13 @@ require_once __DIR__ . '/include/header.php';
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 
-<div id="brandModal" class="modal">
+<div id="brandModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true" tabindex="-1">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <button type="button" class="close" onclick="closeModal()" aria-label="Close brand editor">&times;</button>
         <h2 id="modalTitle">Add New Brand</h2>
         <form method="POST">
             <?php echo csrf_field(); ?>
@@ -112,8 +129,10 @@ require_once __DIR__ . '/include/header.php';
                 <input type="text" id="logo_url" name="logo_url" placeholder="assets/images/products/logo.jpg">
             </div>
 
-            <button type="submit" class="btn btn-success">Save Brand</button>
-            <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+            <div class="admin-modal-actions">
+                <button type="submit" class="btn btn-success">Save Brand</button>
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -125,7 +144,7 @@ function openAddModal() {
     document.getElementById('brandId').value = '';
     document.getElementById('name').value = '';
     document.getElementById('logo_url').value = '';
-    document.getElementById('brandModal').style.display = 'flex';
+    openAdminModal('brandModal');
 }
 
 function openEditModal(id, name, logo_url) {
@@ -134,18 +153,11 @@ function openEditModal(id, name, logo_url) {
     document.getElementById('brandId').value = id;
     document.getElementById('name').value = name;
     document.getElementById('logo_url').value = logo_url || '';
-    document.getElementById('brandModal').style.display = 'flex';
+    openAdminModal('brandModal');
 }
 
 function closeModal() {
-    document.getElementById('brandModal').style.display = 'none';
-}
-
-window.onclick = function(event) {
-    const modal = document.getElementById('brandModal');
-    if (event.target == modal) {
-        closeModal();
-    }
+    closeAdminModal('brandModal');
 }
 </script>
 

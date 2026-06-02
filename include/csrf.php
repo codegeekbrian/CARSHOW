@@ -38,4 +38,18 @@ function validateCSRFToken($token) {
 function csrfField() {
     return '<input type="hidden" name="csrf_token" value="' . generateCSRFToken() . '">';
 }
+
+// Backwards-compatible helpers
+function init_csrf() {
+    generateCSRFToken();
+}
+function csrf_token() {
+    return generateCSRFToken();
+}
+function csrf_field() {
+    return csrfField();
+}
+function validate_csrf($token = '') {
+    return validateCSRFToken($token);
+}
 ?>

@@ -3,63 +3,62 @@
  * User Registration Page
  * Creates new user accounts with hashed passwords.
  */
-session_start();
+require_once __DIR__ . '/../../include/config.php';
+require_once __DIR__ . '/../../include/csrf.php';
+require_once __DIR__ . '/../../include/session_helpers.php';
+enforce_user_session_timeout();
 
 if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ' . url(''));
     exit;
 }
 
 $error = '';
-$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name             = trim($_POST['name'] ?? '');
-    $email            = trim($_POST['email'] ?? '');
-    $password         = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-
-    // Validation
-    if (empty($name) || empty($email) || empty($password)) {
-        $error = 'All fields are required.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Please enter a valid email address.';
-    } elseif (strlen($password) < 6) {
-        $error = 'Password must be at least 6 characters long.';
-    } elseif ($password !== $confirm_password) {
-        $error = 'Passwords do not match.';
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Invalid request. Please try again.';
     } else {
-        require_once '../../include/db.php';
+        require_once __DIR__ . '/../../include/input_helpers.php';
+        $name             = sanitize_text($_POST['name'] ?? '');
+        $email            = sanitize_email($_POST['email'] ?? '');
+        $password         = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
 
-        // Check if email already exists
-        $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-
-        if ($stmt->fetch()) {
-            $error = 'Email address is already registered.';
+        if (empty($name) || empty($email) || empty($password)) {
+            $error = 'All fields are required.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Please enter a valid email address.';
+        } elseif (strlen($password) < 6) {
+            $error = 'Password must be at least 6 characters long.';
+        } elseif ($password !== $confirm_password) {
+            $error = 'Passwords do not match.';
         } else {
-            // Insert new user with hashed password
-            $stmt = $db->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-            if ($stmt->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT)])) {
-                $success = 'Registration successful! You can now login.';
+            require_once __DIR__ . '/../../include/db.php';
+
+            $stmt = $db->prepare('SELECT id FROM users WHERE email = ?');
+            $stmt->execute([$email]);
+
+            if ($stmt->fetch()) {
+                $error = 'Email address is already registered.';
             } else {
-                $error = 'Registration failed. Please try again.';
+                $insert = $db->prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+                if ($insert->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT)])) {
+                    start_user_session((int) $db->lastInsertId(), $name);
+                    header('Location: ' . url(''));
+                    exit;
+                } else {
+                    $error = 'Registration failed. Please try again.';
+                }
             }
         }
     }
 }
+$current_page = 'register';
+$pageTitle = 'Register';
+require_once __DIR__ . '/../../include/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — Own It &amp; Drive It</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-</head>
-<body>
-    <?php include __DIR__ . "/../../include/nav.php"; ?>
-
+<main>
     <div class="page-content">
         <div class="auth-wrap">
             <h2>User Registration</h2>
@@ -68,11 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
 
-            <?php if ($success): ?>
-                <div class="success-msg"><?php echo htmlspecialchars($success); ?></div>
-            <?php endif; ?>
-
             <form method="POST">
+                <?php echo csrfField(); ?>
                 <div class="form-group">
                     <label for="name">Full Name</label>
                     <input type="text" id="name" name="name"
@@ -87,37 +83,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <small style="color:var(--muted);font-size:.72rem;margin-top:.3rem;display:block;">At least 6 characters.</small>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted); cursor: pointer;">
-                        <input type="checkbox" onclick="togglePassword('password')"> Show Password
-                    </label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" required autocomplete="new-password">
+                        <button type="button" class="password-toggle" data-password-toggle="password" aria-pressed="false">Show</button>
+                    </div>
+                    <small class="auth-help-text d-block mt-1">At least 6 characters.</small>
                 </div>
 
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted); cursor: pointer;">
-                        <input type="checkbox" onclick="togglePassword('confirm_password')"> Show Password
-                    </label>
+                    <div class="password-field">
+                        <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+                        <button type="button" class="password-toggle" data-password-toggle="confirm_password" aria-pressed="false">Show</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-auth">Register</button>
 
                 <div class="auth-link">
-                    Already have an account? <a href="login.php">Login here</a>
+                    Already have an account? <a href="<?php echo url('login'); ?>">Login here</a>
                 </div>
             </form>
         </div>
     </div>
+</main>
 
-    <script>
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        input.type = input.type === 'password' ? 'text' : 'password';
-    }
-    </script>
-
-    <?php include __DIR__ . "/../../include/footer.php"; ?>
-</body>
-</html>
+<?php include __DIR__ . '/../../include/footer.php'; ?>
