@@ -43,18 +43,12 @@ define('SITE_NAME', $_ENV['SITE_NAME'] ?? 'Own It & Drive It');
 define('SITE_LOCATION', $_ENV['SITE_LOCATION'] ?? 'Nairobi, Kenya');
 define('SITE_URL', $_ENV['SITE_URL'] ?? 'http://localhost:3000/');
 
-// Determine the base path for routing and links
 $script_name = $_SERVER['SCRIPT_NAME'] ?? '';
 $base = (strpos($script_name, 'index.php') !== false)
     ? str_replace('index.php', '', $script_name)
     : '/';
 define('BASE_PATH', rtrim($base, '/') . '/');
 
-/**
- * Helper to generate correct internal URLs
- * @param string $path Path relative to project root (e.g., 'inventory')
- * @return string Full relative URL
- */
 function url($path = '') {
     $path = ltrim((string)$path, '/');
     if ($path === '' || $path === '/') {

@@ -1,8 +1,4 @@
 <?php
-/**
- * Vehicle Inventory Page
- * Displays all vehicles with filtering by brand, year, and search.
- */
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../include/db.php';
 require_once __DIR__ . '/../include/analytics.php';
@@ -48,17 +44,10 @@ if (!defined('IS_INDEX_INCLUDE')) {
 <main>
     <header class="site-hero">
         <h1>Our <span>Inventory</span></h1>
-        <p><?php echo h($settings['inventory_tagline'] ?? "Browse our carefully sourced selection of quality vehicles from around the world."); ?></p>
+        <p><?php echo h($settings['inventory_tagline'] ?? "Browse available stock, compare specs, and book a branch viewing."); ?></p>
     </header>
 
     <div class="page-content">
-        <section class="trust-row" aria-label="Dealership services">
-            <span>Inspection-ready stock</span>
-            <span>Branch viewing</span>
-            <span>Trade-in inquiry</span>
-            <span>Financing inquiry</span>
-        </section>
-
         <div class="inventory-filter-compact" aria-label="Inventory filter controls">
             <button class="mobile-filter-toggle" type="button" data-filter-open aria-controls="inventoryFilters" aria-expanded="false">
                 Filter inventory
@@ -85,7 +74,7 @@ if (!defined('IS_INDEX_INCLUDE')) {
                     <label for="search">Search</label>
                     <input type="text" id="search" name="search"
                            value="<?php echo h($search); ?>"
-                           placeholder="Model, brand, description...">
+                           placeholder="Model, brand, description..." autocomplete="off">
                 </div>
 
                 <div class="filter-group">
@@ -215,7 +204,7 @@ if (!defined('IS_INDEX_INCLUDE')) {
                                             <span><?php echo h($recommendation['branch_name'] ?? $default_branch); ?></span>
                                         </div>
                                         <div class="vehicle-card-actions">
-                                            <a href="<?php echo url('vehicle/' . (int)$recommendation['id']); ?>" class="btn card-link-wrap">View</a>
+                                            <a href="<?php echo url('vehicle/' . (int)$recommendation['id']); ?>" class="btn card-link-wrap">View details</a>
                                         </div>
                                     </div>
                                 </article>
@@ -282,7 +271,7 @@ if (!defined('IS_INDEX_INCLUDE')) {
                             <a href="<?php echo url('contact?subject=' . $priceSubject); ?>">Unlock Best Price</a>
                         </div>
                         <div class="vehicle-card-actions">
-                            <a href="<?php echo url('vehicle/' . (int) $v['id']); ?>" class="btn card-link-wrap">View</a>
+                            <a href="<?php echo url('vehicle/' . (int) $v['id']); ?>" class="btn card-link-wrap">View details</a>
                             <a href="<?php echo url('contact?subject=' . $availabilitySubject); ?>" class="btn-outline">Check Availability</a>
                         </div>
                         <div class="vehicle-card-tools" aria-label="Vehicle shortlist actions">

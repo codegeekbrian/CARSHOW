@@ -1,0 +1,599 @@
+/* --- Typography & Structural Layout --- */
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.1;
+}
+
+p {
+  line-height: 1.75;
+}
+
+.page-content {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-xl) 5rem;
+}
+
+main .page-content > section + section {
+  margin-top: var(--space-3xl);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  color: var(--white);
+  font-family: var(--font-disp);
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: 4px;
+}
+
+.section-title span {
+  color: var(--gold-light);
+}
+
+.section-title .title-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+/* --- Global Navigation Bar --- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  padding: 0 var(--space-xl);
+  border-bottom: 1px solid var(--border);
+  background: rgba(13, 13, 13, 0.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+}
+
+[data-theme="light"] .navbar {
+  background: rgba(250, 248, 245, 0.92);
+}
+
+.navbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  opacity: 0.55;
+  background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+}
+
+.navbar-brand {
+  font-family: var(--font-disp);
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+  color: var(--gold-light);
+  text-shadow: 0 0 30px rgba(240, 184, 64, 0.3);
+  white-space: nowrap;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: var(--space-2xs);
+}
+
+.nav-menu li {
+  display: flex;
+}
+
+.navbar-links a,
+.navbar-links .dropdown-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 42px;
+  padding: var(--space-sm) 0.85rem;
+  border-radius: var(--r-sm);
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.navbar-links a::after,
+.navbar-links .dropdown-trigger::after {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 5px;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-mid);
+  background: var(--gold);
+}
+
+.navbar-links a:hover,
+.navbar-links .dropdown-trigger:hover {
+  color: var(--white);
+}
+
+.navbar-links a:hover::after,
+.navbar-links a.active::after,
+.navbar-links .dropdown-trigger:hover::after {
+  transform: scaleX(1);
+}
+
+.navbar-links a.active {
+  color: var(--gold-light);
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1100;
+  display: none;
+  min-width: 220px;
+  padding: var(--space-xs) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--carbon2);
+  box-shadow: var(--shadow-lg);
+}
+
+.dropdown-menu li {
+  display: block;
+}
+
+.dropdown-menu a {
+  display: block;
+  min-height: auto;
+  padding: 0.65rem 1rem;
+  border-radius: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.9px;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.dropdown-menu a::after {
+  display: none;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu a.active {
+  color: var(--gold-light);
+  background: var(--gold-dim);
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  display: block;
+  animation: fadeInDown var(--transition-mid);
+}
+
+.nav-dropdown.open > .dropdown-menu {
+  display: block;
+  animation: menuDrop 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.nav-toggle.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.nav-backdrop[hidden] {
+  display: none;
+}
+
+.theme-toggle-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.32rem 0.72rem;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* --- Page Hero Sections --- */
+.site-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 4.5rem var(--space-xl) 3.5rem;
+  text-align: center;
+}
+
+.site-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(13, 13, 13, 0) 0%, rgba(13, 13, 13, 0.95) 100%),
+    linear-gradient(135deg, rgba(201, 146, 42, 0.06) 0%, transparent 50%);
+}
+
+[data-theme="light"] .site-hero::before {
+  background:
+    linear-gradient(180deg, rgba(250, 248, 245, 0) 0%, rgba(250, 248, 245, 0.86) 100%),
+    linear-gradient(135deg, rgba(201, 146, 42, 0.05) 0%, transparent 50%);
+}
+
+.site-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  right: -10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold-light) 50%, var(--gold) 60%, transparent 100%);
+  animation: scanline 3.4s ease-in-out infinite;
+}
+
+.site-hero h1 {
+  position: relative;
+  font-family: var(--font-disp);
+  font-size: clamp(3rem, 8vw, 6rem);
+  letter-spacing: 6px;
+  color: var(--white);
+}
+
+.site-hero h1 span {
+  color: var(--gold-light);
+}
+
+.site-hero p {
+  position: relative;
+  max-width: 620px;
+  margin: var(--space-md) auto 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  letter-spacing: 0.2px;
+}
+
+[data-theme="light"] .site-hero p {
+  color: #5d574f;
+}
+
+.hero-rule {
+  position: relative;
+  width: 60px;
+  height: 2px;
+  margin: 1.4rem auto 0;
+  background: var(--gold);
+}
+
+.home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+  align-items: center;
+  min-height: 620px;
+  padding: 5rem var(--space-xl) 4rem;
+  text-align: left;
+}
+
+.home-hero .hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+}
+
+.home-hero h1 {
+  font-size: clamp(4rem, 8.4vw, 7.2rem);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+
+.hero-bento {
+  min-height: 420px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-rows: 1fr 0.8fr;
+  gap: var(--space-md);
+}
+
+.hero-bento-tile {
+  min-height: 150px;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.34)),
+    url("../images/products/sky.jpg") center / cover;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-bento-main {
+  grid-row: span 2;
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.38)),
+    url("../images/products/toyota-land-cruiser-300.jpg");
+}
+
+.hero-bento-wide {
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.38)),
+    url("../images/products/porsche-911-turbo-s.jpg");
+}
+
+/* --- Footer Structures --- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--carbon2);
+  padding: 1.4rem var(--space-xl) 1.4rem;
+}
+
+.footer-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.footer-links,
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem 1rem;
+}
+
+.footer-links {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.footer-links a:hover {
+  color: var(--gold-light);
+}
+
+.footer-copy {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.back-to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 950;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--carbon2);
+  color: var(--gold-light);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body.nav-open {
+    overflow: hidden;
+  }
+
+  .navbar {
+    height: 64px;
+    padding: 0 var(--space-md);
+  }
+
+  .navbar-brand {
+    max-width: calc(100vw - 6.5rem);
+    overflow: hidden;
+    font-size: 1.12rem;
+    letter-spacing: 2px;
+    text-overflow: ellipsis;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .navbar-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1300;
+    width: min(20rem, calc(100vw - 2rem));
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+    padding: 5.25rem var(--space-lg) var(--space-lg);
+    border-left: 1px solid var(--border);
+    background: var(--carbon2);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(105%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform var(--transition-mid);
+  }
+
+  .navbar-links.open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .navbar-links[aria-hidden="true"] {
+    display: none;
+  }
+
+  .nav-menu {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .nav-menu li,
+  .navbar-links a,
+  .navbar-links .dropdown-trigger {
+    width: 100%;
+  }
+
+  .theme-toggle-btn {
+    justify-content: center;
+  }
+
+  .site-hero {
+    padding: 3.2rem var(--space-md) 2.4rem;
+  }
+
+  .site-hero h1 {
+    font-size: clamp(2.45rem, 16vw, 4rem);
+    letter-spacing: 0.08em;
+    overflow-wrap: anywhere;
+  }
+
+  .site-hero p {
+    max-width: 34rem;
+    font-size: var(--text-base);
+  }
+
+  .home-hero {
+    display: block;
+    min-height: auto;
+    padding: 4rem var(--space-md) 3rem;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(3.2rem, 18vw, 5rem);
+  }
+
+  .home-hero .hero-copy {
+    max-width: 34rem;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+  }
+
+  .hero-actions .btn,
+  .hero-actions .btn-outline {
+    flex: 1 1 12rem;
+  }
+
+  .hero-bento {
+    display: none;
+  }
+
+  .page-content {
+    padding: var(--space-xl) var(--space-md) 4rem;
+  }
+
+  .section-title {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    font-size: clamp(1.9rem, 12vw, 2.6rem);
+    letter-spacing: 0.09em;
+  }
+
+  .section-title .title-line {
+    flex-basis: 100%;
+  }
+}
+
+@media (min-width: 901px) {
+  .navbar-links {
+    position: static;
+    transform: none;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav-backdrop {
+    display: none;
+  }
+}

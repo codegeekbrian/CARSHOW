@@ -14,9 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 $vehicles = getUserCompareVehicles($db, (int)$_SESSION['user_id']);
 $current_page = 'compare';
 $pageTitle = 'Compare Vehicles';
-if (!defined('IS_INDEX_INCLUDE')) {
-    require_once __DIR__ . '/../include/header.php';
-}
+require_once __DIR__ . '/../include/header.php';
 ?>
 
 <main>
@@ -37,9 +35,16 @@ if (!defined('IS_INDEX_INCLUDE')) {
                 <?php foreach ($vehicles as $vehicle): ?>
                     <?php $finance = financeEstimateRange($vehicle['price'] ?? 0, $settings ?? []); ?>
                     <article class="compare-page-card">
-                        <img src="<?php echo getVehicleImage($vehicle['image_url'] ?? ''); ?>" alt="<?php echo h($vehicle['brand_name'] . ' ' . $vehicle['model']); ?>" loading="lazy">
-                        <p class="vehicle-card-brand"><?php echo h($vehicle['brand_name']); ?></p>
-                        <h2><?php echo h($vehicle['model']); ?></h2>
+                        <div class="compare-card-media">
+                            <img src="<?php echo getVehicleImage($vehicle['image_url'] ?? ''); ?>"
+                                 alt="<?php echo h($vehicle['brand_name'] . ' ' . $vehicle['model']); ?>"
+                                 loading="lazy"
+                                 onerror="this.src='<?php echo url('assets/images/products/toyota-land-cruiser-300.jpg'); ?>'; this.onerror=null;">
+                        </div>
+                        <div class="compare-card-head">
+                            <p class="vehicle-card-brand"><?php echo h($vehicle['brand_name']); ?></p>
+                            <h2><?php echo h($vehicle['model']); ?></h2>
+                        </div>
                         <dl class="spec-list">
                             <dt>Year</dt><dd><?php echo h($vehicle['year']); ?></dd>
                             <dt>Body</dt><dd><?php echo h($vehicle['vehicle_type'] ?: '-'); ?></dd>
@@ -49,7 +54,7 @@ if (!defined('IS_INDEX_INCLUDE')) {
                             <dt>Finance</dt><dd><?php echo h($finance['available'] ? $finance['label'] : 'Check availability'); ?></dd>
                         </dl>
                         <div class="vehicle-card-actions">
-                            <a class="btn" href="<?php echo url('vehicle/' . (int)$vehicle['id']); ?>">View</a>
+                            <a class="btn" href="<?php echo url('vehicle/' . (int)$vehicle['id']); ?>">View details</a>
                             <a class="btn-outline" href="<?php echo url('contact?type=appointment&vehicle_id=' . (int)$vehicle['id']); ?>">Book</a>
                         </div>
                     </article>

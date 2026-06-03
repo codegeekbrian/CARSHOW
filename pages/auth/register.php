@@ -1,8 +1,4 @@
 <?php
-/**
- * User Registration Page
- * Creates new user accounts with hashed passwords.
- */
 require_once __DIR__ . '/../../include/config.php';
 require_once __DIR__ . '/../../include/csrf.php';
 require_once __DIR__ . '/../../include/session_helpers.php';
@@ -61,7 +57,7 @@ require_once __DIR__ . '/../../include/header.php';
 <main>
     <div class="page-content">
         <div class="auth-wrap">
-            <h2>User Registration</h2>
+            <h1>User Registration</h1>
 
             <?php if ($error): ?>
                 <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
@@ -71,13 +67,13 @@ require_once __DIR__ . '/../../include/header.php';
                 <?php echo csrfField(); ?>
                 <div class="form-group">
                     <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name"
+                    <input type="text" id="name" name="name" autocomplete="name"
                            value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email"
+                    <input type="email" id="email" name="email" autocomplete="email"
                            value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
                 </div>
 

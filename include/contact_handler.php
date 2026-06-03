@@ -1,14 +1,9 @@
 <?php
-/**
- * Contact Form Handler (MySQL)
- * Validates input, saves to database, and returns JSON.
- */
 header('Content-Type: application/json');
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/csrf.php';
 
-// ── Validation ───────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit;
@@ -41,7 +36,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-// ── Database Storage ─────────────────────────────────────
 try {
     $appointmentId = null;
 
@@ -113,3 +107,4 @@ try {
     error_log("Contact form DB error: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'An error occurred while saving your message. Please try again later.']);
 }
+

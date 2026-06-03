@@ -1,8 +1,4 @@
 <?php
-/**
- * User Profile Page
- * Allows logged-in users to view and update their profile.
- */
 require_once __DIR__ . '/../../include/config.php';
 require_once __DIR__ . '/../../include/db.php';
 require_once __DIR__ . '/../../include/csrf.php';
@@ -10,7 +6,6 @@ require_once __DIR__ . '/../../include/session_helpers.php';
 require_once __DIR__ . '/../../include/customer_journey.php';
 enforce_user_session_timeout($db);
 
-// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: ' . url('login'));
     exit;
@@ -21,7 +16,6 @@ $error = '';
 $success = '';
 $base_path = rtrim(BASE_PATH, '/') . '/';
 
-// Fetch user data
 $stmt = $db->prepare('SELECT name, email FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -36,7 +30,6 @@ $savedVehicles = getUserSavedVehicles($db, (int)$user_id);
 $compareVehicles = getUserCompareVehicles($db, (int)$user_id);
 $journeyActivity = getUserJourneyActivity($db, (int)$user_id, $user['email']);
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = 'Invalid request. Please try again.';
@@ -51,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Please enter a valid email address.';
         } else {
-            // Check if email is already taken by another user
             $stmt = $db->prepare('SELECT id FROM users WHERE email = ? AND id != ?');
             $stmt->execute([$email, $user_id]);
             if ($stmt->fetch()) {

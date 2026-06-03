@@ -15,27 +15,33 @@ try {
     $settings = loadSettings($db);
 } catch (Exception $e) {
     $settings = [];
-    // Fallback values
 }
+
 if (!defined('IS_INDEX_INCLUDE')) {
     require_once __DIR__ . '/../include/header.php';
 }
 ?>
-    <main>
-        <div class="site-hero">
-        <h1>ABOUT <span>US</span></h1>
-        <p><?php echo h($settings['about_tagline'] ?? "Kenya's trusted home for quality locally available vehicles and automotive passion."); ?></p>
+<main>
+    <div class="site-hero">
+        <h1>ABOUT <span>THE SHOWROOM</span></h1>
+        <p><?php echo h($settings['about_tagline'] ?? "Direct from source, locally available. We bring quality vehicles to your doorstep without the usual showroom jargon."); ?></p>
         <div class="hero-rule"></div>
     </div>
 
     <div class="page-content">
-        <div class="about-box">
-            <h2><?php echo h(SITE_NAME); ?></h2>
-            <p><?php echo h(str_replace('{site_name}', SITE_NAME, $settings['about_p1'] ?? (SITE_NAME . " is a car dealership incorporated in Kenya, specialising in the sale of new and second-hand motor vehicles. We pride ourselves on offering quality, carefully sourced vehicles guided by our core values and a burning desire to satisfy customer needs."))); ?></p>
-            <p><?php echo h($settings['about_p2'] ?? "Vehicles in our dealership are sourced locally and from reputable international markets — ensuring variety to meet every taste and budget in the Kenyan market."); ?></p>
-            <p><?php echo h($settings['about_p3_intro'] ?? "Beyond the showroom, we help customers compare vehicles, arrange viewing appointments, and understand financing or trade-in options before they visit a branch."); ?></p>
-            <p><?php echo h($settings['about_p4'] ?? "Whether you are a first-time buyer or a seasoned collector, our team is here to make the process easy, transparent, and safe. <strong>Own it. Drive it. Love it.</strong>"); ?></p>
-        </div>
+        <section class="about-layout" aria-label="About the showroom">
+            <div class="about-box">
+                <p class="profile-kicker">How we work</p>
+                <h2><?php echo h(SITE_NAME); ?></h2>
+                <p><?php echo h(str_replace('{site_name}', SITE_NAME, $settings['about_p1'] ?? (SITE_NAME . " is a Nairobi-based dealership focused on clean, well-maintained vehicles. We handle the sourcing and inspections so you can focus on choosing the right car."))); ?></p>
+                <p><?php echo h($settings['about_p2'] ?? "Our stock is a mix of locally sourced units and hand-picked imports from Japan and the UK, covering everything from reliable daily drivers to premium SUVs."); ?></p>
+                <p><?php echo h($settings['about_p3_intro'] ?? "We help you compare specs, schedule viewings across our branches, and figure out the best way to get behind the wheel."); ?></p>
+                <p><?php echo h($settings['about_p4'] ?? "Transparency is the point: clear details, practical guidance, and no pressure while you decide."); ?></p>
+            </div>
+            <aside class="about-note">
+                <span>Built around inspection, viewing, and practical buying support.</span>
+            </aside>
+        </section>
 
         <div class="stat-strip">
             <div class="stat-item">

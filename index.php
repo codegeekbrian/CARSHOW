@@ -1,7 +1,5 @@
 <?php
-/**
- * Main Entry Point with Routing
- */
+// Main router and entry point
 
 // Routing - get the path after /index.php
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -130,7 +128,6 @@ switch ($page) {
 
     case 'compare':
         $current_page = 'compare';
-        require_once __DIR__ . '/include/header.php';
         include __DIR__ . '/pages/compare.php';
         break;
 
@@ -154,6 +151,6 @@ switch ($page) {
 }
 
 // Footer for all pages except logout
-if (!in_array($page, ['login', 'register', 'profile', 'compare', 'logout', 'api_contact', 'api_testimonial_comment', 'api_vehicles', 'api_customer_journey'], true)) {
+if (!in_array($page, ['login', 'register', 'profile', 'logout', 'api_contact', 'api_testimonial_comment', 'api_vehicles', 'api_customer_journey'], true)) {
     include __DIR__ . '/include/footer.php';
 }

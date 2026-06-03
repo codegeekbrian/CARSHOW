@@ -47,4 +47,3 @@ Own It & Drive It is a PHP car showroom app for browsing vehicles, sending inqui
 - Keep `.env`, SQL dumps, local databases, logs, backups, cache files, and test output out of Git.
 - Keep real credentials in the server environment or in a private `.env` file.
 - Deploy the app source, public assets, `data/.htaccess`, and any runtime folders your server needs.
-- Do not deploy local verification folders such as `output/`, `test-results/`, `.playwright-cli/`, or `.code-review-graph/`.

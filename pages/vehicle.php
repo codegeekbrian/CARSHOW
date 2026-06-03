@@ -1,8 +1,4 @@
 <?php
-/**
- * Vehicle Detail Page
- * Shows a single inventory vehicle by numeric ID.
- */
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../include/db.php';
 require_once __DIR__ . '/../include/analytics.php';
@@ -80,8 +76,6 @@ $similar_stmt = $db->prepare(
 $similar_stmt->execute([(int) $vehicle['id'], (int) $vehicle['brand_id']]);
 $similar_vehicles = $similar_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Gallery images should be explicit data, not every image in the same folder.
-// Scanning product/brand folders causes unrelated vehicles to appear on detail pages.
 $gallery_images = [];
 
 if (!defined('IS_INDEX_INCLUDE')) {

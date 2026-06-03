@@ -1,8 +1,4 @@
 <?php
-/**
- * Home Page Content
- * Displays hero banner and featured inventory carousel.
- */
 require_once __DIR__ . '/../include/db.php';
 require_once __DIR__ . '/../include/cache.php';
 require_once __DIR__ . '/../include/analytics.php';
@@ -13,7 +9,7 @@ logActivity('view');
 $settings = loadSettings($db);
 
 $heroHeadline = $settings['hero_headline'] ?? "OWN IT.\nDRIVE IT.";
-$heroSubtitle = $settings['hero_subtitle'] ?? "Kenya's premier destination for carefully sourced, locally available vehicles.";
+$heroSubtitle = $settings['hero_subtitle'] ?? "Clean stock, clear pricing, and branch viewings when you are ready.";
 ?>
 
 <main>
@@ -44,26 +40,32 @@ $heroSubtitle = $settings['hero_subtitle'] ?? "Kenya's premier destination for c
                 <div class="carousel-shell">
                     <div class="hero-cards" data-carousel-track>
                         <?php
-                        $featured = getCache('featured_vehicles', 'featured');
+                        $featured = getCache('featured_vehicles_inventory_only', 'featured');
 
                         if ($featured === false) {
                             $stmt = $db->prepare("
                                 SELECT v.*, b.name AS brand_name
                                 FROM vehicles v
                                 JOIN brands b ON v.brand_id = b.id
-                                WHERE v.is_featured = 1 AND v.status = 'available'
+                                WHERE v.is_featured = 1
+                                  AND v.is_inventory = 1
+                                  AND v.status = 'available'
                                 ORDER BY v.year DESC, v.id DESC
                                 LIMIT 6
                             ");
                             $stmt->execute();
                             $featured = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                            setCache('featured_vehicles', $featured, 'featured');
+                            setCache('featured_vehicles_inventory_only', $featured, 'featured');
                         }
 
+                        $fallbackImage = url('assets/images/products/toyota-land-cruiser-300.jpg');
                         foreach ($featured as $car):
                         ?>
                         <article class="hero-card">
-                            <img src="<?php echo getVehicleImage($car['image_url']); ?>" alt="<?php echo h($car['brand_name'] . ' ' . $car['model']); ?>" loading="lazy">
+                            <img src="<?php echo getVehicleImage($car['image_url'] ?? ''); ?>"
+                                 alt="<?php echo h($car['brand_name'] . ' ' . $car['model']); ?>"
+                                 loading="lazy"
+                                 onerror="this.src='<?php echo $fallbackImage; ?>'; this.onerror=null;">
                             <div class="hero-card-overlay">
                                 <div class="hero-card-tag"><?php echo h($car['brand_name']); ?> / <?php echo h($car['year']); ?></div>
                                 <h3><?php echo h($car['model']); ?></h3>

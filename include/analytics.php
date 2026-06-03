@@ -1,7 +1,5 @@
 <?php
-/**
- * Simple Analytics Logger
- */
+// basic analytics logging
 require_once __DIR__ . '/db.php';
 
 if (!function_exists('logActivity')) {

@@ -1,0 +1,304 @@
+.btn,
+.btn-success,
+.btn-danger,
+.btn-secondary,
+.btn-sm,
+.text-action,
+.close {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: var(--admin-radius-sm);
+  padding: 0.62rem 0.95rem;
+  background: var(--admin-gold);
+  color: #1f1608;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.btn:hover,
+.btn-success:hover,
+.btn-danger:hover,
+.btn-secondary:hover,
+.text-action:hover {
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  border-color: var(--admin-line);
+  background: var(--admin-surface-soft);
+  color: var(--admin-text);
+}
+
+.btn-success {
+  background: var(--admin-success);
+  color: #06150d;
+}
+
+.btn-danger {
+  background: var(--admin-danger);
+  color: #fff8f5;
+}
+
+.btn-sm {
+  min-height: 34px;
+  padding: 0.42rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn[disabled],
+button[disabled] {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.form-group label,
+.lead-note-form label {
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.compact-select,
+.admin-search-field input,
+.lead-note-form textarea,
+.category-edit-card input,
+.category-edit-card select,
+.settings-card input,
+.settings-card textarea,
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-sm);
+  padding: 0.65rem 0.75rem;
+  background: var(--admin-surface-soft);
+  color: var(--admin-text);
+  font: inherit;
+}
+
+.form-group textarea,
+.lead-note-form textarea,
+.settings-card textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.compact-select:focus,
+.lead-note-form textarea:focus {
+  outline: none;
+  border-color: var(--admin-line-strong);
+  box-shadow: 0 0 0 3px rgba(209, 154, 42, 0.18);
+}
+
+.form-row,
+.admin-form-grid,
+.settings-workbench-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.checkbox-group,
+.admin-checkline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.checkbox-group label,
+.admin-checkline {
+  align-items: center;
+}
+
+.login-container {
+  width: min(100%, 28rem);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius);
+  padding: 1.4rem;
+  background: var(--admin-surface);
+  box-shadow: var(--admin-shadow);
+}
+
+.login-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.login-form h2 {
+  margin: 0;
+  font-family: var(--font-disp);
+  font-size: 2.4rem;
+  letter-spacing: 0.05em;
+}
+
+.admin-password-toggle,
+.password-toggle {
+  margin-top: 0.4rem;
+}
+
+.message,
+.error,
+.success {
+  padding: 0.78rem 0.9rem;
+  border-radius: var(--admin-radius-sm);
+}
+
+.message.success,
+.success {
+  border: 1px solid rgba(79, 159, 109, 0.35);
+  background: rgba(79, 159, 109, 0.12);
+}
+
+.message.error,
+.error {
+  border: 1px solid rgba(201, 79, 67, 0.35);
+  background: rgba(201, 79, 67, 0.12);
+}
+
+.table-responsive,
+.admin-scroll-panel,
+.inventory-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius);
+  background: var(--admin-surface);
+}
+
+.admin-table-stack {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table-stack th,
+.admin-table-stack td,
+table th,
+table td {
+  padding: 0.78rem;
+  border-bottom: 1px solid var(--admin-line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-table-stack th,
+table th {
+  color: var(--admin-muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+}
+
+.status-badge,
+.status-new,
+.status-info,
+.status-confirmed,
+.status-completed,
+.status-cancelled,
+.status-available,
+.status-won,
+.status-read,
+.status-unread,
+.priority-high,
+.priority-normal,
+.priority-low {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.58rem;
+  background: var(--admin-surface-soft);
+  color: var(--admin-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.status-available,
+.status-won,
+.status-read,
+.status-completed,
+.success {
+  color: #d9ffe7;
+  background: rgba(79, 159, 109, 0.16);
+}
+
+.status-new,
+.status-info,
+.status-unread {
+  color: #d9eaff;
+  background: rgba(94, 139, 189, 0.18);
+}
+
+.status-confirmed,
+.status-reserved,
+.status-appointment,
+.priority-normal {
+  color: #fff0cc;
+  background: rgba(209, 154, 42, 0.18);
+}
+
+.status-cancelled,
+.status-sold,
+.status-lost,
+.priority-high,
+.error {
+  color: #ffe0dc;
+  background: rgba(201, 79, 67, 0.18);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.modal.is-open {
+  display: grid;
+}
+
+.modal-content {
+  width: min(100%, 42rem);
+  max-height: min(86dvh, 52rem);
+  overflow: auto;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius);
+  padding: 1.2rem;
+  background: var(--admin-surface-raised);
+  box-shadow: var(--admin-shadow);
+}
+
+.close {
+  float: right;
+  width: 40px;
+  padding: 0;
+  background: var(--admin-surface-soft);
+  color: var(--admin-text);
+}
+
+.admin-modal-open {
+  overflow: hidden;
+}

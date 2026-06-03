@@ -128,7 +128,11 @@ function render_admin_forbidden(): void
     $title = 'Access restricted';
     echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<title>' . h($title) . ' - ' . h(SITE_NAME) . '</title>';
-    echo '<link rel="stylesheet" href="../assets/css/main.css"><link rel="stylesheet" href="../assets/css/admin.css"></head>';
+    echo '<link rel="stylesheet" href="../assets/css/tokens.css">';
+    echo '<link rel="stylesheet" href="../assets/css/reset.css">';
+    echo '<link rel="stylesheet" href="../assets/css/layout.css">';
+    echo '<link rel="stylesheet" href="../assets/css/components.css">';
+    echo '<link rel="stylesheet" href="../assets/css/admin.css"></head>';
     echo '<body class="admin-body admin-login-body"><main class="login-container">';
     echo '<section class="login-form"><p class="admin-kicker">Dashboard access</p><h2>' . h($title) . '</h2>';
     echo '<p>Your staff position does not include this dashboard area.</p>';

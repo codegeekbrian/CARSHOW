@@ -1,15 +1,10 @@
 <?php
-/**
- * User Login Page
- * Authenticates users against the database.
- */
 require_once __DIR__ . '/../../include/config.php';
 require_once __DIR__ . '/../../include/csrf.php';
 require_once __DIR__ . '/../../include/session_helpers.php';
 require_once __DIR__ . '/../../include/db.php';
 enforce_user_session_timeout($db);
 
-// Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . url(''));
     exit;
@@ -19,7 +14,6 @@ $error = '';
 $notice = $_SESSION['account_notice'] ?? '';
 unset($_SESSION['account_notice']);
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = 'Invalid request. Please try again.';
@@ -36,9 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!publicUserCanAccess($user)) {
                     $error = 'This account is not currently available. Please contact the dealership team.';
                 } else {
-                start_user_session((int) $user['id'], $user['name']);
-                header('Location: ' . url(''));
-                exit;
+                    start_user_session((int) $user['id'], $user['name']);
+                    header('Location: ' . url(''));
+                    exit;
                 }
             } else {
                 $error = 'Invalid email or password.';
@@ -53,7 +47,7 @@ require_once __DIR__ . '/../../include/header.php';
 <main>
     <div class="page-content">
         <div class="auth-wrap">
-            <h2>User Login</h2>
+            <h1>User Login</h1>
 
             <?php if ($error): ?>
                 <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
@@ -66,7 +60,7 @@ require_once __DIR__ . '/../../include/header.php';
                 <?php echo csrfField(); ?>
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email"
+                    <input type="email" id="email" name="email" autocomplete="email"
                            value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
                 </div>
 

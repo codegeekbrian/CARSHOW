@@ -62,15 +62,15 @@ if (!defined('IS_INDEX_INCLUDE')) {
                 <input type="hidden" name="vehicle_id" value="<?php echo (int)$selected_vehicle_id; ?>">
                 <div class="form-group">
                     <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" placeholder="Your name" required>
+                    <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
                 </div>
                 <div class="form-group">
                     <label for="subject">Subject</label>
-                    <input type="text" id="subject" name="subject" placeholder="Vehicle inquiry, pricing, etc."
+                    <input type="text" id="subject" name="subject" placeholder="Vehicle inquiry, pricing, etc." autocomplete="off"
                            value="<?php echo htmlspecialchars($subject_prefill); ?>">
                 </div>
                 <?php if ($inquiry_type === 'appointment'): ?>

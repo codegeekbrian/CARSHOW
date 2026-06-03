@@ -96,7 +96,7 @@ require_once __DIR__ . '/include/header.php';
                 </div>
                 <div class="form-group">
                     <label for="hero_subtitle">Hero Subtitle</label>
-                    <textarea id="hero_subtitle" name="hero_subtitle" rows="2"><?php echo h($settings['hero_subtitle'] ?? "Kenya's premier destination for quality locally available vehicles and a better showroom experience."); ?></textarea>
+                    <textarea id="hero_subtitle" name="hero_subtitle" rows="2"><?php echo h($settings['hero_subtitle'] ?? "Clean stock, clear pricing, and branch viewings when you are ready."); ?></textarea>
                 </div>
             </div>
 
@@ -109,7 +109,7 @@ require_once __DIR__ . '/include/header.php';
                 </div>
                 <div class="form-group">
                     <label for="about_p1">About Paragraph 1</label>
-                    <textarea id="about_p1" name="about_p1" rows="3"><?php echo h($settings['about_p1'] ?? SITE_NAME . " is a car dealership incorporated in Kenya, specialising in the sale of new and second-hand motor vehicles. We pride ourselves on offering quality, carefully sourced vehicles guided by our core values and a burning desire to satisfy customer needs."); ?></textarea>
+                    <textarea id="about_p1" name="about_p1" rows="3"><?php echo h($settings['about_p1'] ?? SITE_NAME . " sells new and pre-owned vehicles in Kenya. We inspect stock, list the details clearly, and help customers arrange branch viewings."); ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="about_p2">About Paragraph 2</label>
@@ -167,11 +167,11 @@ require_once __DIR__ . '/include/header.php';
                 </div>
                 <div class="form-group">
                     <label for="inventory_tagline">Inventory Page Tagline</label>
-                    <textarea id="inventory_tagline" name="inventory_tagline" rows="2"><?php echo h($settings['inventory_tagline'] ?? "Browse our carefully sourced selection of quality vehicles from around the world."); ?></textarea>
+                    <textarea id="inventory_tagline" name="inventory_tagline" rows="2"><?php echo h($settings['inventory_tagline'] ?? "Browse available stock, compare specs, and book a branch viewing."); ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="meta_description_default">Default Meta Description</label>
-                    <textarea id="meta_description_default" name="meta_description_default" rows="2"><?php echo h($settings['meta_description_default'] ?? "Kenya's premier car dealership and automotive enthusiast hub."); ?></textarea>
+                    <textarea id="meta_description_default" name="meta_description_default" rows="2"><?php echo h($settings['meta_description_default'] ?? "Browse available vehicles, book branch viewings, and send trade-in or finance requests."); ?></textarea>
                     <small>Used as fallback when a page doesn't set its own description.</small>
                 </div>
             </div>

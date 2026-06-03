@@ -1,8 +1,4 @@
 <?php
-/**
- * Database Connection (MySQL)
- * Uses PDO to connect to the MySQL database.
- */
 require_once __DIR__ . '/config.php';
 
 $host = $_ENV['DB_HOST'] ?? 'localhost';
@@ -21,7 +17,6 @@ try {
     $db = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
     error_log('Database connection failed: ' . $e->getMessage());
-    // Graceful error display or redirect to 500
     if (defined('DEBUG_MODE') && DEBUG_MODE) {
         die('Database connection error: ' . $e->getMessage());
     } else {

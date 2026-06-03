@@ -82,7 +82,7 @@ require_once __DIR__ . '/include/header.php';
                 <tr>
                     <td data-label="Logo">
                         <?php if ($brand['logo_url']): ?>
-                            <img src="../<?php echo htmlspecialchars($brand['logo_url']); ?>" alt="Logo" class="admin-logo-preview">
+                            <img src="<?php echo getVehicleImage($brand['logo_url']); ?>" alt="<?php echo h($brand['name']); ?> logo" class="admin-logo-preview">
                         <?php else: ?>
                             -
                         <?php endif; ?>

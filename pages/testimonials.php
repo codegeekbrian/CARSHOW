@@ -1,8 +1,4 @@
 <?php
-/**
- * Testimonials Page
- * Shows client feedback and collects new testimonial comments for review.
- */
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../include/csrf.php';
 require_once __DIR__ . '/../include/settings.php';
@@ -10,7 +6,7 @@ require_once __DIR__ . '/../include/testimonials.php';
 
 $current_page = 'testimonials';
 $pageTitle = 'Testimonials';
-$pageDescription = 'Read client feedback and share your experience with ' . SITE_NAME . '.';
+$pageDescription = 'Read customer notes and share your visit with ' . SITE_NAME . '.';
 
 try {
     require_once __DIR__ . '/../include/db.php';
@@ -56,7 +52,7 @@ if (!defined('IS_INDEX_INCLUDE')) {
         <section class="comment-wrap testimonial-submit" aria-labelledby="testimonial-form-title">
             <p class="comment-kicker">Share feedback</p>
             <h2 id="testimonial-form-title">Leave us a comment</h2>
-            <p class="comment-copy">Share a short note about your visit, purchase, or browsing experience. We review comments before publishing them.</p>
+            <p class="comment-copy">Share a short note about your visit, purchase, or vehicle search. We review comments before publishing them.</p>
             <form action="<?php echo url('api/testimonial-comment'); ?>" method="POST" data-ajax-form data-required-fields="client_name,quote" data-submit-label="Submit Comment">
                 <?php echo csrfField(); ?>
                 <div class="form-group">

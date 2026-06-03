@@ -10,7 +10,7 @@ if (!defined('IS_INDEX_INCLUDE')) {
 <main>
     <section class="maintenance-page" aria-labelledby="maintenance-title">
         <p class="eyebrow">Service notice</p>
-        <h1 id="maintenance-title">We are tuning the showroom experience</h1>
+        <h1 id="maintenance-title">We are checking the showroom</h1>
         <p>Something behind the scenes is temporarily unavailable. Please try again shortly, or contact the dealership team if you need immediate assistance.</p>
         <div class="maintenance-actions">
             <a href="<?php echo url('/'); ?>" class="btn">Back to Home</a>

@@ -16,11 +16,14 @@ if (!isset($settings)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo (isset($pageTitle) ? $pageTitle . ' — ' : '') . htmlspecialchars(SITE_NAME); ?></title>
-    <meta name="description" content="<?php echo h($pageDescription ?? ($settings['meta_description_default'] ?? "Kenya's premier car dealership and automotive enthusiast hub.")); ?>">
+    <title><?php echo (isset($pageTitle) ? $pageTitle . ' - ' : '') . htmlspecialchars(SITE_NAME); ?></title>
+    <meta name="description" content="<?php echo h($pageDescription ?? ($settings['meta_description_default'] ?? "Browse available vehicles, book branch viewings, and send trade-in or finance requests.")); ?>">
     <meta name="csrf-token" content="<?php echo h(csrf_token()); ?>">
     <link rel="icon" type="image/svg+xml" href="<?php echo url('assets/images/favicon.svg'); ?>">
-    <link rel="stylesheet" href="<?php echo url('assets/css/main.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/tokens.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/reset.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/layout.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/components.css'); ?>">
 </head>
 <body class="page-<?php echo $current_page ?? 'default'; ?>">
 

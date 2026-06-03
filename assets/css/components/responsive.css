@@ -1,0 +1,330 @@
+﻿@media (max-width: 900px) {
+  .btn,
+  .btn-outline,
+  .btn-auth,
+  .btn-submit {
+    width: 100%;
+    letter-spacing: 0.08em;
+  }
+
+  .trust-row,
+  .contact-info-strip,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-filter-compact {
+    top: calc(64px + 0.35rem);
+    z-index: 850;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    padding: 0.55rem;
+    background: var(--carbon2);
+  }
+
+  .mobile-filter-toggle {
+    width: 100%;
+  }
+
+  .filters-bar {
+    position: fixed;
+    left: var(--space-md);
+    right: var(--space-md);
+    bottom: var(--space-md);
+    z-index: 1100;
+    max-height: min(76dvh, 42rem);
+    overflow: auto;
+    margin: 0;
+    background: var(--carbon2);
+    transform: translateY(calc(100% + 2rem));
+    transition: transform var(--transition-mid);
+  }
+
+  .filters-bar.is-open {
+    transform: translateY(0);
+  }
+
+  .filter-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .filters-bar form {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .filter-backdrop[hidden] {
+    display: none;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  #inventory-container .brand-section .cards-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 0.8rem;
+    overflow-x: auto;
+    padding: 0 0.65rem 0.45rem 0;
+    scroll-padding-inline: 0;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  #inventory-container .brand-section .cards-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  #inventory-container .brand-section .car-card {
+    flex: 0 0 min(86vw, 22rem);
+    scroll-snap-align: start;
+  }
+
+  body.nav-open .inventory-filter-compact {
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .car-card .card-img {
+    height: 126px;
+    border-radius: var(--r-sm) var(--r-sm) 0 0;
+  }
+
+  .car-card {
+    border-radius: var(--r-sm);
+  }
+
+  .vehicle-badges {
+    top: 0.45rem;
+    left: 0.45rem;
+    gap: 0.22rem;
+  }
+
+  .vehicle-badge-icon {
+    min-width: 24px;
+    height: 24px;
+    padding-inline: 0.22rem;
+    border-radius: 5px;
+    font-size: 0.46rem;
+  }
+
+  .car-card .card-body,
+  .auth-wrap,
+  .contact-wrap {
+    padding: 0.68rem;
+  }
+
+  .car-card .card-body {
+    gap: 0.38rem;
+  }
+
+  .vehicle-card-brand {
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+  }
+
+  .car-card h3 {
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    line-height: 1.08;
+  }
+
+  .vehicle-card-meta {
+    gap: 0.28rem;
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+
+  .vehicle-card-meta span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .vehicle-card-price-row {
+    display: grid;
+    gap: 0.22rem;
+    margin-top: 0;
+    padding-top: 0.15rem;
+    font-size: 0.66rem;
+    line-height: 1.3;
+  }
+
+  .vehicle-card-price-row a {
+    font-size: 0.62rem;
+  }
+
+  .vehicle-card-actions .btn,
+  .vehicle-card-actions .btn-outline,
+  .vehicle-card-tools .btn-outline {
+    min-height: 34px;
+    padding: 0.42rem 0.48rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+
+  .vehicle-card-actions,
+  .vehicle-card-tools,
+  .filter-actions,
+  .carousel-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vehicle-card-actions .btn-outline {
+    display: none;
+  }
+
+  .vehicle-card-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .hero-cards {
+    grid-auto-columns: 100%;
+  }
+
+  .hero-card {
+    min-height: 360px;
+  }
+
+  .hero-card img {
+    min-height: 360px;
+  }
+
+  .about-layout,
+  .profile-hero-panel,
+  .profile-dashboard-grid,
+  .compare-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-box,
+  .profile-hero-panel,
+  .compare-page-card {
+    padding: var(--space-md);
+  }
+
+  .about-note {
+    min-height: 14rem;
+  }
+
+  .stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-quick-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-dashboard-grid > .profile-panel,
+  .profile-dashboard-grid > .profile-panel-wide {
+    grid-column: 1 / -1;
+  }
+
+  .profile-panel-head {
+    align-items: center;
+  }
+
+  .profile-vehicle-card {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-vehicle-card img {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+
+  .testimonial-wall,
+  .vehicle-request-grid,
+  .similar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonial-card,
+  .testimonial-card:nth-child(n) {
+    grid-column: 1;
+    min-height: 140px;
+    padding: var(--space-md);
+  }
+
+  .comment-wrap {
+    padding: var(--space-md);
+  }
+
+  .vehicle-detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .vehicle-detail-media > img {
+    aspect-ratio: 4 / 3;
+  }
+
+  .vehicle-detail-specs {
+    position: static;
+  }
+
+  .spec-list {
+    grid-template-columns: minmax(6rem, 0.8fr) minmax(0, 1fr);
+  }
+
+  .spec-list dt,
+  .spec-list dd {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .similar-card {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+  }
+
+  .mobile-vehicle-actions {
+    position: fixed;
+    left: var(--space-sm);
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    z-index: 1050;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    padding: 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    background: rgba(20, 20, 20, 0.92);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(18px) saturate(1.2);
+  }
+
+  .mobile-vehicle-actions a,
+  .mobile-vehicle-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    background: var(--gold);
+    color: var(--carbon);
+    font-family: var(--font-disp);
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+  }
+
+  .compare-tray {
+    width: calc(100vw - 2rem);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+

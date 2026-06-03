@@ -43,6 +43,9 @@
 
     function setNavInteractivity(open) {
         const hiddenFromMobile = mobileQuery.matches && !open;
+        if (hiddenFromMobile && nav.contains(document.activeElement)) {
+            toggle.focus({ preventScroll: true });
+        }
         nav.setAttribute('aria-hidden', hiddenFromMobile ? 'true' : 'false');
         if ('inert' in nav) {
             nav.inert = hiddenFromMobile;
@@ -57,6 +60,9 @@
     }
 
     function setOpen(open, options = {}) {
+        if (!open && nav.contains(document.activeElement)) {
+            toggle.focus({ preventScroll: true });
+        }
         nav.classList.toggle('is-open', open);
         toggle.classList.toggle('is-open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -199,14 +205,23 @@ function openAdminModal(id) {
 function closeAdminModal(id) {
     const modal = document.getElementById(id);
     if (!modal) return;
+    const trigger = adminModalTriggers.get(modal);
+    if (trigger?.isConnected && trigger !== document.body) {
+        trigger.focus({ preventScroll: true });
+    }
+    if (modal.contains(document.activeElement)) {
+        const fallback = document.querySelector('[data-admin-menu-toggle]');
+        if (fallback instanceof HTMLElement) {
+            fallback.focus({ preventScroll: true });
+        }
+    }
+    if (modal.contains(document.activeElement) && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     if (!document.querySelector('.modal.is-open')) {
         document.body.classList.remove('admin-modal-open');
-    }
-    const trigger = adminModalTriggers.get(modal);
-    if (trigger?.isConnected) {
-        trigger.focus({ preventScroll: true });
     }
 }
 

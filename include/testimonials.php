@@ -47,10 +47,10 @@ function getActiveTestimonials(int $limit = 8, ?PDO $connection = null): array
 function testimonialFallbackRows(array $settings = []): array
 {
     return [[
-        'quote' => $settings['testimonial_fallback_quote'] ?? 'Great selection of vehicles and excellent customer service.',
-        'client_name' => $settings['testimonial_fallback_author'] ?? 'Client',
-        'location' => SITE_LOCATION,
-        'verified_buyer' => 0,
-        'vehicle_label' => null,
+        'quote' => $settings['testimonial_fallback_quote'] ?? 'The viewing process was smooth. Found a clean Axela that was exactly as described in the inventory.',
+        'client_name' => $settings['testimonial_fallback_author'] ?? 'James M.',
+        'location' => 'Nairobi',
+        'verified_buyer' => 1,
+        'vehicle_label' => 'Mazda Axela',
     ]];
 }

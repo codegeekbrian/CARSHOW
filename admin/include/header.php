@@ -61,7 +61,11 @@ function adminNavGroupActive(array $items, string $currentPage): bool
             document.documentElement.dataset.adminTheme = theme;
         })();
     </script>
-    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="../assets/css/tokens.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
     <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body class="admin-body" data-admin-theme="night">
