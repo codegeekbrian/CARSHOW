@@ -1,6 +1,6 @@
 # Own It & Drive It
 
-Own It & Drive It is a PHP car showroom app for browsing vehicles, sending inquiries, booking viewing appointments, and managing inventory from an admin panel.
+Own It & Drive It is a PHP/MySQL car showroom app. Customers can browse and search vehicles, send inquiries, and book viewing appointments. Dealers and admins manage inventory from an admin panel.
 
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
@@ -9,14 +9,15 @@ Own It & Drive It is a PHP car showroom app for browsing vehicles, sending inqui
 
 ## Features
 
-- Vehicle and brand management from the admin area.
+- Vehicle search and filtering for customers.
+- Customer registration, login, and profile pages.
 - Vehicle inquiry and contact message tracking.
 - Viewing appointment requests tied to branches and vehicles.
-- Customer registration, login, and profile pages.
-- Admin dashboard with inventory and visitor metrics.
+- Admin panel for dealers and admins to manage vehicles and brands.
+- Dashboard with inventory and visitor metrics.
 - Tagged file cache for repeated page data.
 - CSRF checks, prepared statements, and session controls.
-
+  
 ## Requirements
 
 - PHP 7.4 or newer
